@@ -1,0 +1,36 @@
+---
+- name: create aws instance
+  hosts: localhost
+  gather_facts: False
+  become_user: root
+
+  vars:
+    region: eu-west-1
+    instance_type: t2.micro
+    ami: ami-09ce2fc392a4c0fbc
+    key: demo-key 
+    subnet_id: subnet-e1c49b87
+    group: demo-sg
+    count: 1
+
+  tasks:
+    - name: launch aws instance and install nginx
+      ec2:
+        key_name: "{{ key }}"
+        group: "{{ group }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami }}"
+        wait: true
+        region: "{{ region }}"
+        count: "{{count }}"
+        vpc_subnet_id: "{{subnet_id}}"
+        assign_public_ip: yes
+        instance_tags:
+          Name: demo-ec2
+        user_data: "{{ lookup('file', 'user_data.sh') }}"
+      register: ec2
+    
+    
+
+
+  
